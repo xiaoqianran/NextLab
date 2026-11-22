@@ -10,7 +10,9 @@ const grad = n => `linear-gradient(135deg,hsl(${(n*47)%360} 45% 32%),hsl(${(n*47
 const store = {
   get k(){ return localStorage.getItem("nl_key") || ""; }, set k(v){ v ? localStorage.setItem("nl_key", v) : localStorage.removeItem("nl_key"); },
   get works(){ try { return JSON.parse(localStorage.getItem("nl_works") || "[]"); } catch { return []; } },
-  set works(v){ localStorage.setItem("nl_works", JSON.stringify(v)); }
+  set works(v){ localStorage.setItem("nl_works", JSON.stringify(v)); },
+  get playState(){ try { return JSON.parse(localStorage.getItem("nl_play_state") || "{}"); } catch { return {}; } },
+  set playState(v){ localStorage.setItem("nl_play_state", JSON.stringify(v)); }
 };
 const maskKey = k => k ? k.slice(0,3) + "…" + k.slice(-4) : "API Key";
 function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2200); }
@@ -96,8 +98,10 @@ document.addEventListener("keydown", e => {
   if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==="k"){ e.preventDefault(); cmdK(); }
   if(e.key==="Escape") closeLayer();
   if(e.key==="Enter" && (e.metaKey||e.ctrlKey)){ const b=$("#runbtn"); if(b && !b.disabled) b.click(); }
-  if(e.target.matches("input,textarea,select")) return;
-  if(lastG && Date.now()-lastG<900){ const map={p:"#/play",c:"#/compare",h:"#/chat",a:"#/agent",d:"#/draw",w:"#/works"}; const h=map[e.key.toLowerCase()]; if(h){ location.hash=h; } lastG=0; }
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
+  if(e.target.matches("input,textarea,select") || e.target.isContentEditable) return;
+  if($("#layer").innerHTML) return; // 弹窗打开时不触发序列跳转，避免弹窗后误跳页
+  if(lastG && Date.now()-lastG<900){ const map={p:"#/play",c:"#/compare",h:"#/chat",a:"#/agent",d:"#/draw",w:"#/works"}; const h=map[e.key.toLowerCase()]; if(h){ e.preventDefault(); location.hash=h; } lastG=0; }
   else if(e.key.toLowerCase()==="g") lastG=Date.now();
 });
 let lastG = 0;
@@ -105,7 +109,7 @@ if(localStorage.getItem("nl_theme")==="light") document.body.classList.add("ligh
 
 /* ---------- 首页 ---------- */
 function workCard(w, i){
-  return `<a class="wcard" href="#/w/${i}"><div class="thumb" style="background:${grad(w[3])};height:130px"><span class="tbadge">${w[2]==="video"?"视频":w[2]==="audio"?"音频":"图片"}</span></div>
+  return `<a class="wcard" href="#/w/${i}"><div class="thumb" style="background:${grad(w[3])};height:130px"><span class="tbadge">${w[2]==="video"?"视频":w[2]==="audio"?"音频":"图片"}</span><span class="hovermask">${esc(w[0])}</span></div>
   <div class="meta"><div class="small" style="min-height:40px">${esc(w[0])}</div><div class="muted small">${esc(w[1])} · @openai-next</div>
   <div class="row" style="justify-content:space-between"><span class="muted small">点赞</span><span class="muted small">♡ <span data-likes="${i}">0</span></span></div></div></a>`;
 }
@@ -209,21 +213,46 @@ function modelListHTML(type, curId){
   <select data-filter="vendor"><option>全部厂商</option>${Object.keys(groups).map(g=>`<option>${esc(g)} ${groups[g].length}</option>`).join("")}</select>
   <div style="margin-top:10px">${Object.entries(groups).map(([g,ms])=>`<h5 class="muted" style="margin:12px 0 4px">${esc(g)}</h5>` + ms.map(m=>`<button class="modelitem ${m[0]===curId?"on":""}" data-model="${m[0]}">${esc(m[1])} ${m[5]>="2026-11-06"?'<span class="badge new">新</span>':""} <span class="muted small">4条提示</span></button>`).join("")).join("")}</div>`;
 }
+function paramSeg(m, param, values, def){
+  const saved = (store.playState[m[0]] || {}).params || {};
+  const on = values.includes(saved[param]) ? saved[param] : def;
+  return `<span class="seg" data-param="${param}">${values.map(v=>`<button class="${v===on?"on":""}" data-seg>${v}</button>`).join("")}</span>`;
+}
+function paramNum(m, param, def){
+  const saved = (store.playState[m[0]] || {}).nums || {};
+  const v = saved[param] !== undefined ? saved[param] : def;
+  return `<input type="number" value="${v}" data-param-num="${param}">`;
+}
 function paramsHTML(m){
   if(m[3]==="image") return `<h3 style="margin-top:0">参数</h3>
-  <p class="muted small">尺寸 size</p><span class="seg" data-param="size">${["1:1","3:2","2:3","自动"].map((v,i)=>`<button class="${i===3?"on":""}" data-seg>${v}</button>`).join("")}</span>
-  <p class="muted small">质量 quality</p><span class="seg" data-param="quality">${["自动","低","中","高"].map((v,i)=>`<button class="${i===0?"on":""}" data-seg>${v}</button>`).join("")}</span>
-  ${m[1].includes("Nano Banana")?`<p class="muted small">宽高比 aspect_ratio</p><span class="seg" data-param="aspect_ratio">${["1:1","2:3","3:2","3:4","4:3","4:5","5:4","9:16","16:9","21:9","自动"].map((v,i)=>`<button class="${i===10?"on":""}" data-seg>${v}</button>`).join("")}</span>
-  <p class="muted small">图片尺寸 image_size</p><span class="seg" data-param="image_size">${["1K","2K","4K","自动"].map((v,i)=>`<button class="${i===3?"on":""}" data-seg>${v}</button>`).join("")}</span>`:""}
+  <p class="muted small">尺寸 size</p>${paramSeg(m, "size", ["1:1","3:2","2:3","自动"], "自动")}
+  <p class="muted small">质量 quality</p>${paramSeg(m, "quality", ["自动","低","中","高"], "自动")}
+  ${m[1].includes("Nano Banana")?`<p class="muted small">宽高比 aspect_ratio</p>${paramSeg(m, "aspect_ratio", ["1:1","2:3","3:2","3:4","4:3","4:5","5:4","9:16","16:9","21:9","自动"], "自动")}
+  <p class="muted small">图片尺寸 image_size</p>${paramSeg(m, "image_size", ["1K","2K","4K","自动"], "自动")}`:""}
   <p class="muted small">参考图 reference_image</p><div class="row"><button data-up>上传</button><button data-up>我的上传</button></div>
   <input placeholder="粘贴链接，按 ~ 添加" style="margin-top:8px">
   <details style="margin-top:14px"><summary>高级 · 2</summary>
-  <p class="muted small">背景 background</p><span class="seg" data-param="background">${["自动","透明","不透明"].map((v,i)=>`<button class="${i===0?"on":""}" data-seg>${v}</button>`).join("")}</span>
-  <p class="muted small">输出格式 output_format</p><span class="seg" data-param="output_format">${["PNG","JPEG","WEBP"].map((v,i)=>`<button class="${i===0?"on":""}" data-seg>${v}</button>`).join("")}</span></details>`;
+  <p class="muted small">背景 background</p>${paramSeg(m, "background", ["自动","透明","不透明"], "自动")}
+  <p class="muted small">输出格式 output_format</p>${paramSeg(m, "output_format", ["PNG","JPEG","WEBP"], "PNG")}</details>`;
   if(m[3]==="text") return `<h3 style="margin-top:0">参数</h3>` + D.textParams.slice(3).map(p=>`<p class="muted small"><code>${p[0]}</code> ${p[1]} — ${p[2]} <span class="badge">${p[3]||"可选"}</span></p>`).join("");
-  return `<h3 style="margin-top:0">参数</h3><p class="muted small">画幅 size</p><span class="seg" data-param="size">${["16:9","9:16","1:1","自动"].map((v,i)=>`<button class="${i===3?"on":""}" data-seg>${v}</button>`).join("")}</span>
-  <p class="muted small">时长 duration（秒）</p><input type="number" value="5" data-param-num="duration">
+  return `<h3 style="margin-top:0">参数</h3><p class="muted small">画幅 size</p>${paramSeg(m, "size", ["16:9","9:16","1:1","自动"], "自动")}
+  <p class="muted small">时长 duration（秒）</p>${paramNum(m, "duration", 5)}
   <p class="muted small">参考图 / 首帧</p><div class="row"><button data-up>上传</button><button data-up>我的上传</button></div><input placeholder="粘贴链接，按 ~ 添加" style="margin-top:8px">`;
+}
+function playModelId(){
+  const raw = location.hash.replace(/^#/, ""); const [path, qs] = raw.split("?");
+  if(path==="/play") return new URLSearchParams(qs||"").get("model") || "gpt-image-2.5";
+  const seg = path.split("/").filter(Boolean);
+  if(seg[0]==="models" && seg[1]) return seg[1];
+  return null;
+}
+function savePlayPatch(patch){
+  const id = playModelId(); if(!id) return;
+  const all = store.playState; const cur = all[id] || {};
+  if(patch.prompt !== undefined) cur.prompt = patch.prompt;
+  if(patch.param) (cur.params ||= {})[patch.param[0]] = patch.param[1];
+  if(patch.num) (cur.nums ||= {})[patch.num[0]] = patch.num[1];
+  all[id] = cur; store.playState = all;
 }
 function buildRequest(m, prompt, root){
   const body = { model: m[0], prompt };
@@ -242,6 +271,7 @@ function codeFor(m, prompt, lang, root){
 const EXAMPLES = [["浣熊咖啡师","一只浣熊咖啡师正在萃取浓缩咖啡，清晨的光，35mm 胶片质感"],["中文字海报","茶饮店的极简海报，标题「春茶上新」，毛笔书法字"],["等距实验室","等距视角的剖面图：一间小小的温室实验室，柔和的粉彩光"]];
 function pagePlay(q){
   const m = modelById(q.get("model")) || modelById("gpt-image-2.5");
+  const savedPrompt = (store.playState[m[0]] || {}).prompt || "";
   const inner = `<div class="cols3">
   <div>${typeSeg(m[3],"play")}<div style="margin-top:12px" id="modellist">${modelListHTML(m[3], m[0])}</div>
   <p class="muted small" style="margin-top:16px">${m[0]} · ${esc(m[2])} / ${esc(m[5])} 在 OpenAI Next 实测过</p></div>
@@ -253,9 +283,9 @@ function pagePlay(q){
   <div id="tab-req" style="display:none"><pre id="reqjson"></pre></div>
   <div id="tab-code" style="display:none"><div class="tabs"><button class="on" data-lang="curl">cURL</button><button data-lang="python">Python</button><button data-lang="js">JavaScript</button><button class="btn-ghost" data-copycode>复制</button></div><pre id="codebox"></pre></div>
   <div id="tab-resp" style="display:none"><pre id="respbox">还没有运行过。填提示词、贴 API Key、点运行，结果和响应会出现在这里。</pre></div>
-  <textarea id="prompt" placeholder="描述你想要的…"></textarea>
+  <textarea id="prompt" placeholder="描述你想要的…">${esc(savedPrompt)}</textarea>
   <div class="row" style="margin-top:10px"><button data-act="apikey">API Key ${esc(maskKey(store.k))}</button><button class="btn-ghost" title="费用估算">${esc(m[7])}</button>
-  <button class="btn-primary" id="runbtn" disabled>运行 ⌘↵</button><span class="muted small" id="runhint">还没填：提示词</span></div></div>
+  <button class="btn-primary" id="runbtn" ${savedPrompt.trim()?"":"disabled"}>运行 ⌘↵</button><span class="muted small" id="runhint">${savedPrompt.trim()?"":"还没填：提示词"}</span></div></div>
   <div id="params">${paramsHTML(m)}</div></div>`;
   return shell("工作台", inner);
 }
@@ -332,7 +362,7 @@ async function sendChat(kind){
 document.addEventListener("click", e => {
   const ts = e.target.closest("[data-typeseg]"); if(ts){ location.hash = "#/"+ts.dataset.base+"?type="+ts.dataset.typeseg; }
   const mi = e.target.closest("[data-model]"); if(mi){ location.hash = "#/play?model="+mi.dataset.model; }
-  const sg = e.target.closest("[data-seg]"); if(sg){ $$("[data-seg]", sg.parentElement).forEach(b=>b.classList.remove("on")); sg.classList.add("on"); refreshCode(); }
+  const sg = e.target.closest("[data-seg]"); if(sg){ $$("[data-seg]", sg.parentElement).forEach(b=>b.classList.remove("on")); sg.classList.add("on"); const segEl = sg.closest("[data-param]"); if(segEl) savePlayPatch({ param: [segEl.dataset.param, sg.textContent.trim()] }); refreshCode(); }
   const ex = e.target.closest("[data-example]"); if(ex){ const p=$("#prompt"); if(p){ p.value = ex.dataset.example; p.dispatchEvent(new Event("input")); p.focus(); } }
   const cp = e.target.closest("[data-copy]"); if(cp) copyText(cp.dataset.copy, "模型 ID 已复制");
   if(e.target.closest("[data-copycode]")) copyText($("#codebox")?.textContent||"", "代码已复制");
@@ -361,7 +391,9 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("input", e => {
   if(e.target.id==="prompt"){ const b=$("#runbtn")||$("#sendbtn"); const hint=$("#runhint"); const has=e.target.value.trim().length>0;
+    if(location.hash.replace(/^#/,"").split("?")[0]==="/play") savePlayPatch({ prompt: e.target.value });
     if(b) b.disabled=!has; if(hint) hint.textContent = has?"":"还没填：提示词"; refreshCode(); }
+  if(e.target.matches("[data-param-num]")) savePlayPatch({ num: [e.target.dataset.paramNum, Number(e.target.value)] });
   if(e.target.matches("[data-filter='models']")){ const q=e.target.value.toLowerCase(); $$("#modellist .modelitem").forEach(b=>{ b.style.display = b.textContent.toLowerCase().includes(q)?"":"none"; }); }
 });
 function refreshCode(){
@@ -668,6 +700,8 @@ function render(){
   else if(path==="/notifications"){ html = pageNotifications(); title="通知 · NextLabs"; }
   else { html = page404(); title="404 · NextLabs"; }
   document.title = title; app.innerHTML = html; window.scrollTo(0,0);
+  app.classList.remove("page-enter"); void app.offsetWidth; app.classList.add("page-enter");
+  if(path==="/play") refreshCode();
 }
 window.addEventListener("hashchange", render);
 render();

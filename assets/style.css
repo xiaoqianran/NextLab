@@ -96,3 +96,19 @@ canvas.draw{background:#1c1c21;border:1px solid var(--border);border-radius:12px
 body.light canvas.draw{background:#f4f4f5}
 .pill{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--border);border-radius:999px;padding:4px 14px;background:var(--panel)}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block}
+
+/* 丝滑升级（2026-11-22）：只动 transform/opacity，不触发布局重排 */
+html{scroll-behavior:smooth}
+#app.page-enter{animation:pageIn .18s ease-out}
+@keyframes pageIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+a,button,.modelitem,.chip{transition:opacity .12s ease,background .12s ease,border-color .12s ease,transform .16s ease}
+.wcard,.card{transition:transform .16s ease,border-color .16s ease}
+.wcard:hover{transform:translateY(-2px);border-color:var(--muted)}
+.thumb{background-color:var(--panel2)}
+.thumb .hovermask{position:absolute;left:0;right:0;bottom:0;padding:22px 10px 8px;background:linear-gradient(transparent,rgba(0,0,0,.78));color:#fff;font-size:12px;line-height:1.45;opacity:0;transform:translateY(4px);transition:opacity .16s ease,transform .16s ease}
+.wcard:hover .hovermask{opacity:1;transform:none}
+.overlay{animation:fadeIn .14s ease-out}
+.modal{animation:popIn .16s ease-out}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{opacity:0;transform:translateY(6px) scale(.99)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}#app.page-enter,.overlay,.modal{animation:none}.wcard:hover{transform:none}}
