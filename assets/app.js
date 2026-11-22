@@ -116,8 +116,8 @@ function workCard(w, i){
 function pageHome(){
   const demoModels = [["gpt-image-2.5","GPT Image 2.5","A night market in the rain, neon signs on wet stone, 35mm film"],["seedance-2.0","Seedance 2.0","陶土爷爷吹生日蜡烛"],["seedream-5.0-pro","Seedream 5.0 Pro","红裙舞者火圈"],["gemini-3-pro-image-preview","Nano Banana Pro","浣熊咖啡师"],["minimax-h3","MiniMax H3","五名沙色西装男子"],["gpt-image-2","GPT Image 2","山顶摩天轮"],["seedance-2.0-mini","Seedance 2.0 Mini","温室清晨推镜"]];
   const featured = ["gpt-image-2","seedance-2.0","gemini-3-pro-image-preview","gpt-image-2.5","gemini-3.1-flash-image-preview","seedance-2.5"].map(modelById);
-  const recent = D.updates[0][2].concat(D.updates[2][2]);
-  const chronoHome = [["11月12日",""],["11月10日",""],["11月9日","Claude Fable 5.2"],["11月9日","Muse Ember"],["11月5日","Gemini Omni 1.2 Flash"],["10月27日","Genie 4"]];
+  const recent = D.updates[0][2].map(u=>[u,D.updates[0][0]]).concat(D.updates[1][2].map(u=>[u,D.updates[1][0]]));
+  const chronoHome = D.chronicle.slice(0,6).map(c=>[c[2],c[0]]);
   return topbar("") + `<div class="wrap">
   <div class="hero"><span class="badge">开源 MIT · 为 OpenAI Next 的每个模型而做</span>
   <h1><em>每个会创作的模型，</em>都在一间开放实验室。</h1>
@@ -167,7 +167,7 @@ function pageHome(){
 
   <section class="blk"><h2><span class="serif">最近上新</span> <span class="g" style="font-size:20px">OpenAI Next 最近上新</span></h2>
   <p><a href="#/updates">全部 →</a></p>
-  ${recent.map((u,i)=>{const m=modelById(u[1]);return `<div class="listrow"><div><b>${i+1}. <a href="#/models/${u[1]}">${esc(u[0])}</a></b> <span class="muted small">${i<2?"11月13日":"11月11日"}</span><p class="muted" style="margin:4px 0">${esc(u[2])}</p></div>
+  ${recent.map(([u,dt],i)=>{const m=modelById(u[1]);return `<div class="listrow"><div><b>${i+1}. <a href="#/models/${u[1]}">${esc(u[0])}</a></b> <span class="muted small">${dt}</span><p class="muted" style="margin:4px 0">${esc(u[2])}</p></div>
   <div class="row" style="flex:none"><a href="#/play?model=${u[1]}"><button>试一试</button></a><a href="#/models/${u[1]}"><button>接口</button></a></div></div>`}).join("")}</section>
 
   <section class="blk"><h2><span class="serif">编年史</span> <span class="g" style="font-size:20px">行业最近发布</span></h2>

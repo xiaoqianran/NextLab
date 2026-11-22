@@ -1,10 +1,10 @@
 // NextLab 复刻版数据层 — 内容来自对 labs.openai-next.com 的公开页面盘点（2026-11-16）
 // 注：不包含任何个人账户信息；画廊视觉为本地渐变占位，不热链原站素材。
 window.NL_DATA = {
-  stats: { models: 436, tested: 276, vendors: 23, chronicle: 1426 },
+  stats: { models: 438, tested: 276, vendors: 23, chronicle: 1395 },
   vendorCloud: ["OpenAI","Google","Gemini","Nano Banana","字节跳动","豆包","MiniMax","快手可灵","xAI","Grok","Suno","ElevenLabs","Anthropic","Claude","DeepSeek","通义千问","智谱","月之暗面","Kimi","Meta","腾讯混元","文心","讯飞星火","零一万物","阶跃星辰","LLaVA"],
   vendors: [
-    ["OpenAI","openai",114,"GPT Image 2.6 Sunburst"],["Anthropic","anthropic",46,"Claude Fable 5.2"],["Google","google",73,"Gemini 4 Hydrogen"],
+    ["OpenAI","openai",116,"GPT Image 2.6 Sunburst"],["Anthropic","anthropic",46,"Claude Fable 5.2"],["Google","google",73,"Gemini 4 Hydrogen"],
     ["深度求索","deepseek",23,"DeepSeek V4 Flash"],["xAI","xai",16,"Grok 4.2"],["阿里通义","alibaba",44,"Qwen3-Max"],
     ["月之暗面","moonshot",7,"Kimi K3"],["智谱","zhipu",15,"GLM-5.3"],["字节跳动","bytedance",15,"Seedream 5.5"],
     ["MiniMax","minimax",5,"MiniMax H3"],["零一万物","yi",7,"Yi"],["百度文心","baidu",2,"文心"],["ElevenLabs","elevenlabs",19,"Eleven Multilingual v2"],
@@ -64,6 +64,8 @@ window.NL_DATA = {
     ["scribe-v2","Scribe v2","ElevenLabs","audio","语音转文字：给音频地址，返回转写文本，按秒计费。","2026-11-07",0,"按秒计费"],
     ["gpt-4o-mini-tts-2","GPT-4o mini TTS","OpenAI","audio","GPT-4o mini TTS 语音合成。","2026-10-29",0,"按字符计费"],
     ["gpt-4o-tts","GPT-4o TTS","OpenAI","audio","GPT-4o TTS。","2026-10-29",0,"按字符计费"],
+    ["gpt-6.2-sol","GPT-6.2 Sol","OpenAI","text","OpenAI 的 GPT-6.2 Sol：105 万 token 上下文，带推理，支持工具调用和看图；价格和 GPT-6.1 Sol 一样，OpenAI 和 Responses 两种格式都能调。","2026-11-18",0,"按 token 计费"],
+    ["gpt-6.2-astra","GPT-6.2 Astra","OpenAI","text","GPT-6.2 Astra：GPT-6.2 最大的一档，价格是 Sol 的 4 倍；105 万 token 上下文，带推理，支持工具调用和看图。","2026-11-18",0,"按 token 计费"],
     ["gpt-6.1-sol","GPT-6.1 Sol","OpenAI","text","OpenAI GPT-6.1 Sol。","2026-10-20",0,"按 token 计费"],
     ["gpt-6.1","GPT-6.1","OpenAI","text","OpenAI GPT-6.1。","2026-11-07",0,"按 token 计费"],
     ["gpt-6.1-pro","GPT-6.1 Pro","OpenAI","text","GPT-6.1 Pro。","2026-11-07",0,"按 token 计费"],
@@ -95,10 +97,12 @@ window.NL_DATA = {
   ],
   // [日期组, 版本, [[模型名, id, 简介]]]
   updates: [
+    ["11月18日","v0.13.26",[["GPT-6.2 Sol","gpt-6.2-sol","OpenAI 的 GPT-6.2 Sol：105 万 token 上下文，带推理，支持工具调用和看图；价格和 GPT-6.1 Sol 一样，OpenAI 和 Responses 两种格式都能调。"],["GPT-6.2 Astra","gpt-6.2-astra","GPT-6.2 Astra：GPT-6.2 最大的一档，价格是 Sol 的 4 倍；105 万 token 上下文，带推理，支持工具调用和看图。"]]],
     ["11月13日","v0.13.8",[["Gemini 4 Hydrogen","gemini-4-hydrogen","Google 的 Gemini 4 Hydrogen：约 105 万 token 上下文，带推理，支持看图；价格是 Gemini 4 Carbon 的四分之三，OpenAI 和 Gemini 两种格式都能调。"],["Gemini 3.5 Flash Lite","gemini-3.5-flash-lite","Gemini 3.5 里最便宜的一档，约 105 万 token 上下文；另有不思考的 gemini-3.5-flash-nothinking。"]]],
     ["11月12日","v0.13.7",[["Gemini 3.5 Flash","gemini-3.5-flash","Gemini 3.5 Flash。"],["Gemini 3.5 Pro","gemini-3.5-pro","Gemini 3.5 Pro。"]]],
-    ["11月11日","v0.13.6",[["Gemini 4 Carbon","gemini-4-carbon","Google 的 Gemini 4 Carbon：约 105 万 token 上下文，带推理，支持工具调用和看图；OpenAI 和 Gemini 两种格式都能调。"],["Seedream 5.5","seedream-5.5","字节跳动的 Seedream 5.5：最新一代图像生成，2K / 4K，支持参考图，按次计费。"]]],
-    ["11月10日","v0.13.5",[["GPT Image 2.6 Sunburst","gpt-image-2.6-sunburst","GPT Image 2.6 的三个型号，接口和参数与 2.5 相同，两个平台都已实测。"],["GPT Image 2.6 Flare","gpt-image-2.6-flare","同 2.6 系列。"],["GPT Image 2.6","gpt-image-2.6","同 2.6 系列。"],["Claude Fable 5.2","claude-fable-5.2","Anthropic 的 Claude Fable 5.2：100 万 token 上下文，带推理，支持工具调用和看图。"],["Claude Haiku 5.5","claude-haiku-5.5","Claude 5 里最快最便宜的一档。"],["ElevenLabs v4","eleven-v3","ElevenLabs 最新一代语音合成，按字符计费。"]]],
+    ["11月11日","v0.13.7",[["Gemini 4 Carbon","gemini-4-carbon","Google 的 Gemini 4 Carbon：约 105 万 token 上下文，带推理，支持工具调用和看图；OpenAI 和 Gemini 两种格式都能调。"],["Seedream 5.5","seedream-5.5","字节跳动的 Seedream 5.5：最新一代图像生成，2K / 4K，支持参考图，按次计费。"]]],
+    ["11月10日","v0.13.6",[["ElevenLabs v4","eleven-v3","ElevenLabs v4：最新一代语音合成，也能把多句台词按各自音色合成一段对话；按字符计费。"],["ElevenLabs 音效","eleven-sfx","ElevenLabs 音效：一句话生成 0.5–30 秒的音效，可以做成能循环的，按秒计费。"],["ElevenLabs 音乐","eleven-music","ElevenLabs 音乐：一句话生成 3 秒到 10 分钟的音乐，可以只要器乐，按秒计费；v1、v2、v2.5 三个版本。"],["Scribe v2 Medical","scribe-v2","Scribe v2 Medical：面向医疗场景的语音转文字，按秒计费。"],["Jev 1.13","jev-latest","Jev 1.13 固定版本：行为不随 jev-latest 升级而变，适合需要结果稳定的线上判断。"]]],
+    ["11月10日","v0.13.5",[["Claude Fable 5.2","claude-fable-5.2","Anthropic 的 Claude Fable 5.2：100 万 token 上下文，带推理，支持工具调用和看图；OpenAI 和 Anthropic 两种格式都能调。"],["Claude Haiku 5.5","claude-haiku-5.5","Claude Haiku 5.5：Claude 5 里最快最便宜的一档，100 万 token 上下文，带推理，支持工具调用和看图。"],["GPT Image 2.6","gpt-image-2.6","GPT Image 2.6 的三个型号，接口和参数与 2.5 相同（/v1/images/generations），两个平台都已实测。"],["Claude Opus 4.5 (latest)","claude-opus-4.6","Claude Opus 4.5、Sonnet 4.5、Sonnet 4 不带日期的型号名，默认分组的 key 就能用。"]]],
     ["11月9日","v0.13.4",[["Claude Fable 5.2","claude-fable-5.2","见 11月10日组。"],["Muse Ember","muse-video","Meta Muse Ember。"],["GPT-5.5 X","gpt-5.5-x","GPT-5.5 X。"],["Gemini Omni 1.2 Flash","gemini-omni-1.2-flash","Google 最新的视频模型，文生或首帧图生，720p / 360p，带声音，按秒计费。"]]],
     ["11月8日","v0.13.3",[["GPT-5.5","gpt-5.5","GPT-5.5。"],["Kimi K3","kimi-k3","月之暗面的 Kimi K3。"]]],
     ["11月7日","v0.13.2",[["GPT-6.1 Pro","gpt-6.1-pro","GPT-6.1 Pro。"],["GPT-6.1 Sol","gpt-6.1-sol","GPT-6.1 Sol。"],["GPT-6.1","gpt-6.1","GPT-6.1。"],["Nano Banana 2.1","nano-banana-2.1","Nano Banana 2.1。"],["ElevenLabs 语音","eleven-multilingual-v2","语音合成、对话、音色设计、转写、换音色、配音。"]]],
@@ -109,11 +113,16 @@ window.NL_DATA = {
     ["11月2日","v0.12.10",[["Claude Fable 5.1","claude-fable-5.2","Claude Fable 5.1。"],["GPT-5.5 X","gpt-5.5-x","GPT-5.5 X（版本说明）。"],["Muse 视频与播客","muse-video","Meta Muse：文生、图生、首尾帧、多参考图的 720p 有声视频；还有多音色对谈的播客。"],["Jev","jev-latest","TypeSafe 的结构化决策模型，输出免费。"]]]
   ],
   chronicle: [
+    ["Gemini 4 Neon","Google","11月18日","发布","","",""],
+    ["GPT-6.2 Astra","OpenAI","11月17日","发布","","GPT-6.2 最大的一档，价格是 Sol 的 4 倍","gpt-6.2-astra"],
+    ["GPT-6.2 Sol","OpenAI","11月17日","发布","","105 万 token 上下文，带推理，支持工具调用和看图","gpt-6.2-sol"],
+    ["Qwen4-Max","阿里通义","11月16日","发布","","",""],
     ["Gemini 4 Hydrogen","Google","11月12日","发布","$1.5/$7.5","约 105 万 token 上下文，带推理，支持看图","gemini-4-hydrogen"],
     ["Gemini 3.5 Flash Lite","Google","11月11日","发布","","Gemini 3.5 里最便宜的一档","gemini-3.5-flash-lite"],
     ["Gemini 4 Carbon","Google","11月10日","发布","$2/$10","约 105 万 token 上下文，带推理，支持工具调用和看图","gemini-4-carbon"],
     ["Muse Ember","Meta","11月9日","发布","$0.1/$0.5","","muse-video"],
     ["Claude Fable 5.2","Anthropic","11月9日","发布","$8/$40","100 万 token 上下文","claude-fable-5.2"],
+    ["Claude Mythos 5.2","Anthropic","11月9日","发布","","",""],
     ["Gemini Omni 1.2 Flash","Google","11月5日","发布","","视频模型，720p / 360p，带声音","gemini-omni-1.2-flash"],
     ["Gemini 3.5 Flash","Google","11月5日","发布","","","gemini-3.5-flash"],
     ["Gemini 3.1 Flash Image","Google","11月5日","发布","","","gemini-3.1-flash-image-preview"],
@@ -164,9 +173,9 @@ window.NL_DATA = {
     ["内容被拦截","内容被拦截","提示词或图片被上游的安全检查拦下，换个说法再试。","内容拦截"]
   ],
   statusRows: [
-    ["GPT Image 2","api","正常","88.20%","0.0s","51","http_524"],["GPT Image 2.5","api","正常","88.90%","35.0s","46","http_524"],
-    ["GPT Image 2.6","api","正常","100%","37.0s","46","–"],["Seedream 5.5","api","不稳定","70%","26.0s","46","http_524"],
-    ["Nano Banana Pro","api","正常","100%","27.0s","23","–"],["GPT Image 2.6 Sunburst","api","正常","90%","43.0s","20","http_524"]
+    ["GPT Image 2.6","api","正常","97.10%","37.0s","35","http_524"],["GPT Image 2","api","正常","100%","0.0s","32","–"],
+    ["Nano Banana 2.1","api","正常","83.30%","84.0s","30","http_524"],["GPT Image 2.5","api","正常","100%","0.0s","14","–"],
+    ["GPT Image 2.6 Sunburst","api","正常","100%","49.0s","13","–"],["Seedream 5.5","api","正常","100%","19.0s","5","–"]
   ],
   textParams: [
     ["prompt","消息","要问模型的话。同一条消息可以发给多个模型对比。","必填"],
